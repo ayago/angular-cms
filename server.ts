@@ -6,7 +6,7 @@ import { AppServerModule } from './src/main.server';
 import { getPageContent } from './server/mongo.service';
 
 const app = express();
-const DIST_FOLDER = join(process.cwd(), 'client/dist/client/browser');
+const DIST_FOLDER = join(process.cwd(), 'dist/client/browser');
 
 // Angular Universal engine
 app.engine('html', ngExpressEngine({ bootstrap: AppServerModule }));

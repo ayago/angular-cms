@@ -1,13 +1,18 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ServerApiVersion } from 'mongodb';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-const uri = 'mongodb://localhost:27017';
-const dbName = 'cms-db';
-
-let client: MongoClient;
+const client = new MongoClient(process.env['MONGO_URI']!, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
 
 export async function getPageContent(slug: string) {
-  client = client || await MongoClient.connect(uri);
-  const db = client.db(dbName);
+  await client.connect();
+  const db = client.db(process.env['DB_NAME']!);
   const page = await db.collection('pages').findOne({ slug });
   return page;
 }
