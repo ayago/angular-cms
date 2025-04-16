@@ -114,7 +114,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/public-site",
+            "outputPath": "dist/public-site/browser",
             "index": "projects/public-site/src/index.html",
             "main": "projects/public-site/src/main.ts",
             "polyfills": [
@@ -194,6 +194,61 @@
             ],
             "scripts": []
           }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/public-site/server",
+            "main": "projects/public-site/server.ts",
+            "tsConfig": "projects/public-site/tsconfig.server.json",
+            "inlineStyleLanguage": "scss"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false,
+              "vendorChunk": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "configurations": {
+            "development": {
+              "browserTarget": "public-site:build:development",
+              "serverTarget": "public-site:server:development"
+            },
+            "production": {
+              "browserTarget": "public-site:build:production",
+              "serverTarget": "public-site:server:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "public-site:build:production",
+              "serverTarget": "public-site:server:production"
+            },
+            "development": {
+              "browserTarget": "public-site:build:development",
+              "serverTarget": "public-site:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }
