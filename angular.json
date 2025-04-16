@@ -3,34 +3,34 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "angular-cms": {
+    "cms": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
-      "root": "",
-      "sourceRoot": "src",
+      "root": "projects/cms",
+      "sourceRoot": "projects/cms/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/client/browser",
-            "index": "src/index.html",
-            "main": "src/main.ts",
+            "outputPath": "dist/cms",
+            "index": "projects/cms/src/index.html",
+            "main": "projects/cms/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "tsconfig.app.json",
+            "tsConfig": "projects/cms/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "projects/cms/src/favicon.ico",
+              "projects/cms/src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "projects/cms/src/styles.scss"
             ],
             "scripts": []
           },
@@ -65,10 +65,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "angular-cms:build:production"
+              "browserTarget": "cms:build:production"
             },
             "development": {
-              "browserTarget": "angular-cms:build:development"
+              "browserTarget": "cms:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -76,7 +76,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "angular-cms:build"
+            "browserTarget": "cms:build"
           }
         },
         "test": {
@@ -86,72 +86,114 @@
               "zone.js",
               "zone.js/testing"
             ],
-            "tsConfig": "tsconfig.spec.json",
+            "tsConfig": "projects/cms/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "projects/cms/src/favicon.ico",
+              "projects/cms/src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "projects/cms/src/styles.scss"
             ],
             "scripts": []
           }
-        },
-        "server": {
-          "builder": "@angular-devkit/build-angular:server",
+        }
+      }
+    },
+    "public-site": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/public-site",
+      "sourceRoot": "projects/public-site/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/angular-cms/server",
-            "main": "server.ts",
-            "tsConfig": "tsconfig.server.json",
-            "inlineStyleLanguage": "scss"
+            "outputPath": "dist/public-site",
+            "index": "projects/public-site/src/index.html",
+            "main": "projects/public-site/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "projects/public-site/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/public-site/src/favicon.ico",
+              "projects/public-site/src/assets"
+            ],
+            "styles": [
+              "projects/public-site/src/styles.scss"
+            ],
+            "scripts": []
           },
           "configurations": {
             "production": {
-              "outputHashing": "media"
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
             },
             "development": {
               "buildOptimizer": false,
               "optimization": false,
-              "sourceMap": true,
+              "vendorChunk": true,
               "extractLicenses": false,
-              "vendorChunk": true
+              "sourceMap": true,
+              "namedChunks": true
             }
           },
           "defaultConfiguration": "production"
         },
-        "serve-ssr": {
-          "builder": "@nguniversal/builders:ssr-dev-server",
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
-            "development": {
-              "browserTarget": "angular-cms:build:development",
-              "serverTarget": "angular-cms:server:development"
-            },
             "production": {
-              "browserTarget": "angular-cms:build:production",
-              "serverTarget": "angular-cms:server:production"
+              "browserTarget": "public-site:build:production"
+            },
+            "development": {
+              "browserTarget": "public-site:build:development"
             }
           },
           "defaultConfiguration": "development"
         },
-        "prerender": {
-          "builder": "@nguniversal/builders:prerender",
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "routes": [
-              "/"
-            ]
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "angular-cms:build:production",
-              "serverTarget": "angular-cms:server:production"
-            },
-            "development": {
-              "browserTarget": "angular-cms:build:development",
-              "serverTarget": "angular-cms:server:development"
-            }
-          },
-          "defaultConfiguration": "production"
+            "browserTarget": "public-site:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "projects/public-site/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "projects/public-site/src/favicon.ico",
+              "projects/public-site/src/assets"
+            ],
+            "styles": [
+              "projects/public-site/src/styles.scss"
+            ],
+            "scripts": []
+          }
         }
       }
     }
