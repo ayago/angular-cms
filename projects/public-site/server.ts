@@ -1,26 +1,59 @@
 import 'zone.js/node';
-import { ngExpressEngine } from '@nguniversal/express-engine';
 import * as express from 'express';
 import { join } from 'path';
-import { AppServerModule } from './src/main.server';
 import { getPageContent } from './src/server/template.service';
+import { existsSync, readFileSync } from 'fs';
+import { renderApplication } from '@angular/platform-server';
+import { AppComponent } from './src/app/app.component';
+import { provideServerRendering } from '@angular/platform-server';
+import { provideRouter } from '@angular/router';
+import { APP_BASE_HREF } from '@angular/common';
+import { bootstrapApplication } from '@angular/platform-browser';
 
+const distFolder = join(process.cwd(), 'dist/public-site/browser');
+const indexHtml = existsSync(join(distFolder, 'index.original.html'))
+  ? 'index.original.html'
+  : 'index.html';
+
+const documentHtml = readFileSync(join(distFolder, indexHtml), 'utf-8');
+
+const port = process.env['PORT'] || 4200;
 const app = express();
-const DIST_FOLDER = join(process.cwd(), 'dist/public-site/browser');
 
-// Angular Universal engine
-app.engine('html', ngExpressEngine({ bootstrap: AppServerModule }));
-app.set('view engine', 'html');
-app.set('views', DIST_FOLDER);
+app.get(
+  '*.*',
+  express.static(distFolder, {
+    maxAge: '1y',
+  })
+);
 
 app.get('*', async (req, res) => {
+  try {
     const slug = req.path === '/' ? 'home' : req.path.substring(1);
     const pageData = await getPageContent(slug);
-    if (!pageData) return res.status(404).send('Page not found');
+    if (!pageData) {
+      return res.status(404).send('Page not found');
+    }
 
-    return res.render('index', { req, res, providers: [{ provide: 'PAGE_DATA', useValue: pageData }] });
-  });
+    const html = await renderApplication(
+      () => bootstrapApplication(AppComponent, {
+          providers: [
+            provideServerRendering(),
+            provideRouter([]),
+            { provide: APP_BASE_HREF, useValue: req.baseUrl },
+            { provide: 'PAGE_DATA', useValue: pageData },
+          ],
+      }),
+      { document: documentHtml, url: req.url }
+    );
 
-app.listen(4200, () => {
-  console.log('Node server listening on http://localhost:4200');
+    return res.status(200).send(html);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('Server Error');
+  }
+});
+
+app.listen(port, () => {
+  console.log(`✅ SSR server running on http://localhost:${port}`);
 });
