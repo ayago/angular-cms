@@ -66,10 +66,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "cms:build:production"
+              "buildTarget": "cms:build:production"
             },
             "development": {
-              "browserTarget": "cms:build:development"
+              "buildTarget": "cms:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -77,7 +77,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "cms:build"
+            "buildTarget": "cms:build"
           }
         },
         "test": {
@@ -164,10 +164,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "public-site:build:production"
+              "buildTarget": "public-site:build:production"
             },
             "development": {
-              "browserTarget": "public-site:build:development"
+              "buildTarget": "public-site:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -175,7 +175,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "public-site:build"
+            "buildTarget": "public-site:build"
           }
         },
         "test": {
@@ -220,7 +220,7 @@
           "defaultConfiguration": "production"
         },
         "serve-ssr": {
-          "builder": "@nguniversal/builders:ssr-dev-server",
+          "builder": "@angular-devkit/build-angular:ssr-dev-server",
           "configurations": {
             "development": {
               "browserTarget": "public-site:build:development",
@@ -234,7 +234,7 @@
           "defaultConfiguration": "development"
         },
         "prerender": {
-          "builder": "@nguniversal/builders:prerender",
+          "builder": "@angular-devkit/build-angular:prerender",
           "options": {
             "routes": [
               "/"
