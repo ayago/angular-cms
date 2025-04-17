@@ -3,105 +3,6 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "cms": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss"
-        }
-      },
-      "root": "projects/cms",
-      "sourceRoot": "projects/cms/src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:application",
-          "options": {
-            "outputPath": {
-              "base": "dist/cms"
-            },
-            "index": "projects/cms/src/index.html",
-            "polyfills": [
-              "zone.js"
-            ],
-            "tsConfig": "projects/cms/tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/cms/src/favicon.ico",
-              "projects/cms/src/assets"
-            ],
-            "styles": [
-              "@angular/material/prebuilt-themes/purple-green.css",
-              "projects/cms/src/styles.scss"
-            ],
-            "scripts": [],
-            "browser": "projects/cms/src/main.ts"
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
-                }
-              ],
-              "outputHashing": "all"
-            },
-            "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "cms:build:production"
-            },
-            "development": {
-              "buildTarget": "cms:build:development"
-            }
-          },
-          "defaultConfiguration": "development"
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "buildTarget": "cms:build"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
-            "tsConfig": "projects/cms/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/cms/src/favicon.ico",
-              "projects/cms/src/assets"
-            ],
-            "styles": [
-              "@angular/material/prebuilt-themes/purple-green.css",
-              "projects/cms/src/styles.scss"
-            ],
-            "scripts": []
-          }
-        }
-      }
-    },
     "public-site": {
       "projectType": "application",
       "schematics": {
@@ -116,28 +17,28 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": {
-              "base": "dist/public-site"
-            },
+            "outputPath": "dist/public-site",
             "index": "projects/public-site/src/index.html",
+            "browser": "projects/public-site/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
             "tsConfig": "projects/public-site/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "projects/public-site/src/favicon.ico",
-              "projects/public-site/src/assets"
+              {
+                "glob": "**/*",
+                "input": "projects/public-site/public"
+              }
             ],
             "styles": [
               "projects/public-site/src/styles.scss"
             ],
             "scripts": [],
-            "browser": "projects/public-site/src/main.ts",
             "server": "projects/public-site/src/main.server.ts",
-            "prerender": true,
+            "outputMode": "server",
             "ssr": {
-              "entry": "projects/public-site/server.ts"
+              "entry": "projects/public-site/src/server.ts"
             }
           },
           "configurations": {
@@ -145,13 +46,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
                 }
               ],
               "outputHashing": "all"
@@ -159,8 +60,7 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
@@ -178,10 +78,7 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "buildTarget": "public-site:build"
-          }
+          "builder": "@angular-devkit/build-angular:extract-i18n"
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
@@ -193,8 +90,10 @@
             "tsConfig": "projects/public-site/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "projects/public-site/src/favicon.ico",
-              "projects/public-site/src/assets"
+              {
+                "glob": "**/*",
+                "input": "projects/public-site/public"
+              }
             ],
             "styles": [
               "projects/public-site/src/styles.scss"
