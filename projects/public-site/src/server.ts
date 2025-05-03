@@ -7,6 +7,7 @@ import {
 import express from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { getPageContent } from './server/template.service';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
@@ -14,17 +15,13 @@ const browserDistFolder = resolve(serverDistFolder, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/**', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log('\n[HOST] ===========================================');
+  console.log(`[HOST] ${new Date().toISOString()} - ${req.method} ${req.url}`);
+  console.log('[HOST] ===========================================\n');
+  next();
+});
 
 /**
  * Serve static files from /browser
@@ -38,25 +35,87 @@ app.use(
 );
 
 /**
+ * Template retrieval endpoint
+ */
+app.get('/api/page/:slug', async (req, res) => {
+  try {
+    console.log('[HOST] Template request received:', {
+      slug: req.params.slug,
+      url: req.url
+    });
+
+    const pageData = await getPageContent(req.params.slug);
+
+    console.log('[HOST] Retrieved page data:', {
+      slug: req.params.slug,
+      hasContent: !!pageData?.content,
+      contentLength: pageData?.content?.length
+    });
+
+    if (!pageData) {
+      res.status(404).json({ error: 'Page not found' });
+    } else {
+      res.json(pageData);
+    }
+  } catch (err) {
+    console.error('[HOST] Error fetching page:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
  * Handle all other requests by rendering the Angular application.
  */
-app.use('/**', (req, res, next) => {
-  angularApp
-    .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
-    .catch(next);
+app.use('/**', async (req, res, next) => {
+  try {
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const slug = url.pathname.replace(/^\/+|\/+$/g, '') || 'home';
+
+    console.log('\n[HOST] Processing request:', {
+      url: req.url,
+      slug,
+      headers: req.headers
+    });
+
+    // Make request available globally for the Angular app
+    (global as any).__REQUEST__ = req;
+
+    const response = await angularApp.handle(req, {
+      bootstrap: true
+    });
+
+    // Clean up global request
+    delete (global as any).__REQUEST__;
+
+    console.log('[HOST] Response received from angularApp.handle:', {
+      hasResponse: !!response,
+      status: response?.status,
+      headers: response?.headers
+    });
+
+    if (response) {
+      console.log('[HOST] Writing response to client');
+      writeResponseToNodeResponse(response, res);
+    } else {
+      console.log('[HOST] No response from Angular, calling next()');
+      next();
+    }
+  } catch (err) {
+    console.error('[HOST] Error handling request:', err);
+    next(err);
+  }
 });
 
 /**
  * Start the server if this module is the main entry point.
- * The server listens on the port defined by the `PORT` environment variable, or defaults to 4000.
  */
 if (isMainModule(import.meta.url)) {
-  const port = process.env['PORT'] || 4000;
+  const port = process.env['PORT'] || 4200;
   app.listen(port, () => {
-    console.log(`Node Express server listening on http://localhost:${port}`);
+    console.log('\n[HOST] ===========================================');
+    console.log(`[HOST] Server started at ${new Date().toISOString()}`);
+    console.log(`[HOST] Listening on http://localhost:${port}`);
+    console.log('[HOST] ===========================================\n');
   });
 }
 

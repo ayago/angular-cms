@@ -7,8 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:public-site": "node dist/public-site/server/server.mjs",
-    "develop": "npm run dev:ssr --prefix projects/public-site"
+    "serve:ssr:public-site": "node dist/public-site/server/server.mjs"
   },
   "private": true,
   "dependencies": {
@@ -21,7 +20,11 @@
     "@angular/platform-server": "^19.2.0",
     "@angular/router": "^19.2.0",
     "@angular/ssr": "^19.2.8",
+    "@types/node-fetch": "^2.6.12",
+    "dotenv": "^16.5.0",
     "express": "^4.18.2",
+    "mongodb": "^6.15.0",
+    "node-fetch": "^2.7.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
