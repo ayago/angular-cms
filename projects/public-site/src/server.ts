@@ -67,42 +67,14 @@ app.get('/api/page/:slug', async (req, res) => {
  * Handle all other requests by rendering the Angular application.
  */
 app.use('/**', async (req, res, next) => {
-  try {
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    const slug = url.pathname.replace(/^\/+|\/+$/g, '') || 'home';
+  const response = await angularApp.handle(req, {
+    bootstrap: true
+  });
 
-    console.log('\n[HOST] Processing request:', {
-      url: req.url,
-      slug,
-      headers: req.headers
-    });
-
-    // Make request available globally for the Angular app
-    (global as any).__REQUEST__ = req;
-
-    const response = await angularApp.handle(req, {
-      bootstrap: true
-    });
-
-    // Clean up global request
-    delete (global as any).__REQUEST__;
-
-    console.log('[HOST] Response received from angularApp.handle:', {
-      hasResponse: !!response,
-      status: response?.status,
-      headers: response?.headers
-    });
-
-    if (response) {
-      console.log('[HOST] Writing response to client');
-      writeResponseToNodeResponse(response, res);
-    } else {
-      console.log('[HOST] No response from Angular, calling next()');
-      next();
-    }
-  } catch (err) {
-    console.error('[HOST] Error handling request:', err);
-    next(err);
+  if (response) {
+    writeResponseToNodeResponse(response, res);
+  } else {
+    next();
   }
 });
 
