@@ -4,4 +4,4 @@ This is a CMS backed frontend built using Angular Universal. Page templates are 
 
 ## Run Locally
 
-`npm run dev:ssr --prefix projects/public-site`
+`npm run build && npm run serve:ssr:public-site`

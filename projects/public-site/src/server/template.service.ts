@@ -13,6 +13,9 @@ const client = new MongoClient(process.env['MONGO_URI']!, {
 export async function getPageContent(slug: string): Promise<any> {
   await client.connect();
   const db = client.db(process.env['DB_NAME']!);
-  const page = await db.collection('pages').findOne({ slug });
+  const page = await db.collection('pages').findOne(
+    { slug },
+    { projection: { _id: 0 } }  // Exclude _id field from the response
+  );
   return page;
 }
